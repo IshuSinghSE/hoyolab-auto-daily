@@ -47,18 +47,29 @@
             "primogem": 60,
             "adventurersexperience": 5
           }
+        },
+        "YMYDGB318H98": {
+          "redeemedAt": "2026-06-04T23:43:38.103Z",
+          "rewards": {
+            "mora": 10000,
+            "adventurersexperience": 10,
+            "fineenhancementore": 5,
+            "jueyunchilichicken": 5,
+            "stirfriedfishnoodles": 5
+          }
         }
       },
       "totals": {
         "primogem": 260,
         "geodeofreplication": 160,
-        "mora": 10000,
-        "adventurersexperience": 25,
-        "fineenhancementore": 5,
-        "jueyunchilichicken": 5,
+        "mora": 20000,
+        "adventurersexperience": 35,
+        "fineenhancementore": 10,
+        "jueyunchilichicken": 10,
         "midsommartorte": 1,
         "fruittandemturnovers": 1,
-        "chenyuadeptea": 5
+        "chenyuadeptea": 5,
+        "stirfriedfishnoodles": 5
       }
     }
   }
