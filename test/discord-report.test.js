@@ -19,6 +19,10 @@ describe('summarizeTodayTotals', () => {
       { primogem: 80, mora: 10000 },
     )
   })
+
+  it('accepts legacy primogems key', () => {
+    assert.deepEqual(summarizeTodayTotals([{ primogems: 60 }]), { primogem: 60, mora: 0 })
+  })
 })
 
 describe('check-in status labels', () => {

@@ -42,8 +42,8 @@ export function summarizeTodayTotals(rewardsList) {
   const totals = { primogem: 0, mora: 0 }
   for (const rewards of rewardsList) {
     if (!rewards) continue
-    if (rewards.primogem) totals.primogem += rewards.primogem
-    if (rewards.mora) totals.mora += rewards.mora
+    totals.primogem += rewards.primogem ?? rewards.primogems ?? 0
+    totals.mora += rewards.mora ?? 0
   }
   return totals
 }

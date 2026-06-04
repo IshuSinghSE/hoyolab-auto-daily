@@ -1,6 +1,11 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { mergeTotals, parseRewards, parseGiftCookie } from '../src/redeem.js'
+import {
+  canonicalizeRewardKey,
+  mergeTotals,
+  parseRewards,
+  parseGiftCookie,
+} from '../src/redeem.js'
 
 describe('mergeTotals', () => {
   it('sums known and new reward keys', () => {
@@ -19,10 +24,23 @@ describe('parseRewards', () => {
     )
   })
 
-  it('parses natural language amounts', () => {
+  it('parses natural language amounts with canonical keys', () => {
     const rewards = parseRewards('60 primogems, 10k mora')
-    assert.equal(rewards.primogems, 60)
+    assert.equal(rewards.primogem, 60)
     assert.equal(rewards.mora, 10000)
+  })
+
+  it('parses compound segments joined with "and"', () => {
+    assert.deepEqual(
+      parseRewards('60 Primogems and five Adventurer\'s Experience'),
+      { primogem: 60, adventurersexperience: 5 },
+    )
+  })
+})
+
+describe('canonicalizeRewardKey', () => {
+  it('maps plural primogems to primogem', () => {
+    assert.equal(canonicalizeRewardKey('primogems'), 'primogem')
   })
 })
 

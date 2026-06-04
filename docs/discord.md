@@ -83,7 +83,7 @@ Use `SKIP_DISCORD=1` in `.env` for local runs without posting.
 ## GitHub Actions
 
 - **Daily check-in** workflow: text-only Discord message (no `canvas` required).
-- **Redeem codes** workflow: runs full daily job (`check-in` + `redeem`), generates `daily-report.png` when new codes are redeemed, and uploads it as a workflow artifact.
+- **Redeem codes** workflow: redemption only (check-in runs 30 minutes earlier). Posts Discord when new codes are redeemed; otherwise the daily check-in workflow sends the summary. Generates `daily-report.png` when new codes are redeemed.
 - **Test** workflow: verifies unit tests and report generation on every push/PR.
 
 Optional: copy `HYWenHei-Extended.ttf` into `assets/fonts/` on a self-hosted runner for exact in-game typography. GitHub-hosted runners use system font fallbacks.

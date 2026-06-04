@@ -10,6 +10,8 @@ import { log, hasErrors } from './logger.js'
 import { sendDiscordDailySummary } from './discord-notify.js'
 import { runRedeem, isDryRun } from './redeem.js'
 
+const FETCH_TIMEOUT_MS = 30_000
+
 const endpoints = {
   zzz: 'https://sg-act-nap-api.hoyolab.com/event/luna/zzz/os/sign?act_id=e202406031448091',
   gi:  'https://sg-hk4e-api.hoyolab.com/event/sol/sign?act_id=e202102251931481',
@@ -107,7 +109,12 @@ async function runCheckIn(cookie, gamesLine) {
     headers.set('x-rpc-signgame', game)
     headers.set('user-agent', 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36')
 
-    const res = await fetch(url, { method: 'POST', headers, body })
+    const res = await fetch(url, {
+      method: 'POST',
+      headers,
+      body,
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    })
     const json = await res.json()
     const code = String(json.retcode)
     const successCodes = {
@@ -184,7 +191,10 @@ export async function runDaily(options = {}) {
   }
 
   const discordWebhook = process.env.DISCORD_WEBHOOK
-  if (!skipDiscord && discordWebhook && URL.canParse(discordWebhook)) {
+  const notifyDiscord = !skipDiscord && discordWebhook && URL.canParse(discordWebhook)
+    && (!skipCheckIn || redeemSummary.newlyRedeemed.length > 0)
+
+  if (notifyDiscord) {
     try {
       await sendDiscordDailySummary({
         genshinCheckInStatus,

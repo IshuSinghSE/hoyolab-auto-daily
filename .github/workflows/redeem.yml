@@ -35,8 +35,8 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Check in, redeem, and notify Discord
-        run: node scripts/run-local.js all
+      - name: Redeem codes and notify Discord (check-in runs in daily check-in workflow)
+        run: node scripts/run-local.js redeem
         env:
           COOKIE: ${{ secrets.COOKIE }}
           GIFT_COOKIE: ${{ secrets.GIFT_COOKIE }}

@@ -32,6 +32,23 @@ if (!process.env.GAMES?.trim()) {
   warnings.push('GAMES has no gi — Genshin redemption will be skipped')
 }
 
+function envLineCount(name) {
+  return process.env[name]?.split('\n').map(s => s.trim()).filter(Boolean).length ?? 0
+}
+
+const cookieLines = envLineCount('COOKIE')
+const gamesLines = envLineCount('GAMES')
+const giftLines = envLineCount('GIFT_COOKIE')
+
+if (cookieLines > 1) {
+  if (gamesLines > 1 && gamesLines !== cookieLines) {
+    warnings.push(`GAMES has ${gamesLines} line(s) but COOKIE has ${cookieLines} — use one GAMES line per account`)
+  }
+  if (giftLines > 1 && giftLines !== cookieLines) {
+    warnings.push(`GIFT_COOKIE has ${giftLines} line(s) but COOKIE has ${cookieLines} — use one gift cookie line per account`)
+  }
+}
+
 if (process.env.GIFT_COOKIE?.trim()) {
   checkCookie('GIFT_COOKIE', /cookie_token_v2=/i, 'cookie_token_v2')
   checkCookie('GIFT_COOKIE', /account_id_v2=/i, 'account_id_v2')

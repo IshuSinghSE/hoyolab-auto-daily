@@ -1,4 +1,4 @@
-import { readFile, writeFile } from 'fs/promises'
+import { readFile, rename, writeFile } from 'fs/promises'
 import { dirname, join } from 'path'
 import { fileURLToPath } from 'url'
 import { log } from './logger.js'
@@ -18,6 +18,7 @@ const CODES_URL = 'https://hoyo-codes.seria.moe/codes?game=genshin'
 const RECORD_CARD_URL = 'https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard'
 const REDEEM_URL = 'https://sg-hk4e-api.hoyolab.com/common/apicdkey/api/webExchangeCdkey'
 const REDEEM_DELAY_MS = 10000
+const FETCH_TIMEOUT_MS = 30_000
 const GENSHIN_BIZ = 'hk4e_global'
 const GENSHIN_GAME_ID = 2
 const LOG_GAME = 'GENSHIN'
@@ -43,8 +44,29 @@ export function mergeTotals(totals, rewards) {
   return merged
 }
 
+const REWARD_KEY_ALIASES = {
+  primogems: 'primogem',
+}
+
 function normalizeRewardKey(name) {
   return name.toLowerCase().replace(/['']/g, '').replace(/[^a-z0-9]+/g, '')
+}
+
+export function canonicalizeRewardKey(key) {
+  return REWARD_KEY_ALIASES[key] ?? key
+}
+
+function canonicalizeRewards(rewards) {
+  const out = {}
+  for (const [key, amount] of Object.entries(rewards)) {
+    const canon = canonicalizeRewardKey(key)
+    out[canon] = (out[canon] || 0) + amount
+  }
+  return out
+}
+
+function fetchWithTimeout(url, init = {}) {
+  return fetch(url, { ...init, signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) })
 }
 
 function wordToNumber(word) {
@@ -52,6 +74,36 @@ function wordToNumber(word) {
     one: 1, two: 2, three: 3, four: 4, five: 5, six: 6, seven: 7, eight: 8, nine: 9, ten: 10,
   }
   return map[word.toLowerCase()] ?? Number(word)
+}
+
+function parseRewardPart(part) {
+  const rewards = {}
+  part = part.trim()
+  if (!part) return rewards
+
+  let match = part.match(/^(.+?)\*(\d+)$/i)
+  if (match) {
+    const key = normalizeRewardKey(match[1])
+    rewards[key] = (rewards[key] || 0) + Number(match[2])
+    return rewards
+  }
+
+  match = part.match(/^(\d+(?:\.\d+)?)\s*([kK])?\s+(.+)$/i)
+  if (match) {
+    let amount = Number(match[1])
+    if (match[2]) amount *= 1000
+    const key = normalizeRewardKey(match[3])
+    rewards[key] = (rewards[key] || 0) + amount
+    return rewards
+  }
+
+  match = part.match(/^(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(.+)$/i)
+  if (match) {
+    const key = normalizeRewardKey(match[2])
+    rewards[key] = (rewards[key] || 0) + wordToNumber(match[1])
+  }
+
+  return rewards
 }
 
 export function parseRewards(rewardsStr) {
@@ -62,30 +114,13 @@ export function parseRewards(rewardsStr) {
     part = part.trim()
     if (!part) continue
 
-    let match = part.match(/^(.+?)\*(\d+)$/i)
-    if (match) {
-      const key = normalizeRewardKey(match[1])
-      rewards[key] = (rewards[key] || 0) + Number(match[2])
-      continue
-    }
-
-    match = part.match(/^(\d+(?:\.\d+)?)\s*([kK])?\s+(.+)$/i)
-    if (match) {
-      let amount = Number(match[1])
-      if (match[2]) amount *= 1000
-      const key = normalizeRewardKey(match[3])
-      rewards[key] = (rewards[key] || 0) + amount
-      continue
-    }
-
-    match = part.match(/^(one|two|three|four|five|six|seven|eight|nine|ten|\d+)\s+(.+)$/i)
-    if (match) {
-      const key = normalizeRewardKey(match[2])
-      rewards[key] = (rewards[key] || 0) + wordToNumber(match[1])
+    const segments = part.split(/\s+and\s+/i)
+    for (const segment of segments) {
+      Object.assign(rewards, mergeTotals(rewards, parseRewardPart(segment)))
     }
   }
 
-  return rewards
+  return canonicalizeRewards(rewards)
 }
 
 function parseGiftCookieLine(line) {
@@ -172,16 +207,24 @@ export async function loadRedeemState() {
     return state
   } catch (err) {
     if (err.code === 'ENOENT') return { accounts: {} }
+    if (err instanceof SyntaxError) {
+      log('error', LOG_GAME, `Corrupt redeem state (${getRedeemStatePath()}), starting fresh`)
+      return { accounts: {} }
+    }
     throw err
   }
 }
 
 async function saveState(state) {
-  await writeFile(getRedeemStatePath(), JSON.stringify(state, null, 2) + '\n')
+  const path = getRedeemStatePath()
+  const tmp = `${path}.tmp`
+  const body = JSON.stringify(state, null, 2) + '\n'
+  await writeFile(tmp, body)
+  await rename(tmp, path)
 }
 
 export async function fetchActiveCodes() {
-  const res = await fetch(CODES_URL)
+  const res = await fetchWithTimeout(CODES_URL)
   if (!res.ok) throw new Error(`Failed to fetch codes (${res.status})`)
   const json = await res.json()
   return (json.codes || []).filter(entry => entry.status === 'OK')
@@ -191,7 +234,7 @@ async function getGenshinRoles(giftAccount) {
   const url = new URL(RECORD_CARD_URL)
   url.searchParams.set('uid', giftAccount.accountIdV2)
 
-  const res = await fetch(url, { headers: buildHeaders(giftAccount.cookie, 'https://www.hoyolab.com/') })
+  const res = await fetchWithTimeout(url, { headers: buildHeaders(giftAccount.cookie, 'https://www.hoyolab.com/') })
   const json = await res.json()
   const code = String(json.retcode)
 
@@ -218,7 +261,7 @@ async function exchangeCdkey(giftCookie, role, cdkey) {
   url.searchParams.set('lang', 'en')
   url.searchParams.set('sLangKey', 'en-us')
 
-  const res = await fetch(url, { method: 'GET', headers: buildHeaders(giftCookie) })
+  const res = await fetchWithTimeout(url, { method: 'GET', headers: buildHeaders(giftCookie) })
   return res.json()
 }
 
@@ -294,6 +337,14 @@ export function getLifetimePrimogems(account) {
   return account.totals?.primogem ?? 0
 }
 
+export function sumLifetimePrimogems(state) {
+  let total = 0
+  for (const account of Object.values(state.accounts ?? {})) {
+    total += getLifetimePrimogems(account)
+  }
+  return total
+}
+
 export async function runRedeem({ games }) {
   const dryRun = isDryRun()
   const runSummary = { newlyRedeemed: [], lifetimePrimogems: 0 }
@@ -358,11 +409,15 @@ export async function runRedeem({ games }) {
     const giftAccount = giftAccounts[index]
     const account = ensureAccount(state, accountKey)
     const changedKeys = new Set()
+    const pendingCodes = activeCodes.filter(entry => !(entry.code in account.redeemedCodes))
 
-    for (const entry of activeCodes) {
-      if (entry.code in account.redeemedCodes) {
-        log('debug', LOG_GAME, `Skipping already redeemed code ${entry.code}`)
+    if (!pendingCodes.length) {
+      if (dryRun) {
+        console.log(`[DRY RUN] Account ${accountNum}: no new redemption codes found`)
+      } else {
+        log('info', LOG_GAME, 'No new redemption codes found')
       }
+      continue
     }
 
     let roles
@@ -375,17 +430,6 @@ export async function runRedeem({ games }) {
 
     if (!roles.length) {
       log('error', LOG_GAME, 'No Genshin accounts found (AR 10+ required)')
-      continue
-    }
-
-    const pendingCodes = activeCodes.filter(entry => !(entry.code in account.redeemedCodes))
-
-    if (!pendingCodes.length) {
-      if (dryRun) {
-        console.log(`[DRY RUN] Account ${accountNum}: no new redemption codes found`)
-      } else {
-        log('info', LOG_GAME, 'No new redemption codes found')
-      }
       continue
     }
 
@@ -410,7 +454,7 @@ export async function runRedeem({ games }) {
       stateChanged = true
 
       runSummary.newlyRedeemed.push({ code: codeEntry.code, rewards })
-      runSummary.lifetimePrimogems = getLifetimePrimogems(account)
+      runSummary.lifetimePrimogems = sumLifetimePrimogems(state)
 
       log('info', LOG_GAME, `Redeemed ${codeEntry.code}`)
       for (const [key, amount] of Object.entries(rewards)) {
