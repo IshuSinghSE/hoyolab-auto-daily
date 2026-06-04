@@ -10,6 +10,12 @@ const docsDir = join(__dirname, '..', 'docs')
 const GIFT_PAGE = 'https://genshin.hoyoverse.com/en/gift'
 const REDEEMED = '✅ Redeemed'
 
+function giftRedeemUrl(code) {
+  const url = new URL(GIFT_PAGE)
+  url.searchParams.set('code', code)
+  return url.toString()
+}
+
 function formatRewards(rewards) {
   if (!rewards || !Object.keys(rewards).length) return '—'
   return Object.entries(rewards)
@@ -48,7 +54,7 @@ function buildRedeemCodesMd(state) {
   lines.push('| Code | Rewards | Status |', '| --- | --- | --- |')
 
   for (const [code, rewards] of codes) {
-    const codeLink = `[${code}](${GIFT_PAGE})`
+    const codeLink = `[${code}](${giftRedeemUrl(code)})`
     lines.push(`| ${codeLink} | ${formatRewards(rewards)} | ${REDEEMED} |`)
   }
 
