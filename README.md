@@ -1,176 +1,97 @@
-# Hoyolab Auto Daily Check In
+<div align="center">
 
-Today's check in status:
-[![If you see this text, chances are the automation hasn't run. Do your setup below!](../../actions/workflows/login.yml/badge.svg)](../../actions/workflows/login.yml)
+# 🌙 Hoyolab Auto Daily
 
-Repository version:
-[![Do your setup!](../../actions/workflows/version.yml/badge.svg)](../../actions/workflows/version.yml)
+**Automated HoYoLAB check-in and Genshin code redemption — powered by GitHub Actions**
 
-## Table of Contents
+No servers · No dependencies · Fork and run
 
-- [Getting your cookie](#getting-your-cookie)
-- [Usage](#usage)
-- [Multiple Accounts](#multiple-accounts)
-- [Discord Webhook](#discord-webhook)
-- [FAQ](#faq)
-  - [Is this safe?](#is-this-safe)
-  - [How to update my (fork) repository version?](#how-to-update-my-fork-repository-version)
-  - [Error not logged in](#error-not-logged-in)
-  - [I have other issues](#i-have-other-issues)
+<br>
 
-## Getting your cookie
+[![License](https://img.shields.io/github/license/sglkc/hoyolab-auto-daily?style=flat-square)](LICENSE)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D20-339933?style=flat-square&logo=node.js&logoColor=white)](.nvmrc)
+[![Dependencies](https://img.shields.io/badge/dependencies-zero-success?style=flat-square)](package.json)
 
-You have to check in manually first to get your cookie, follow these steps (click to open screenshot):
+<br>
 
-1. Open [HoYoLAB](https://www.hoyolab.com/home) and login if you haven't (obviously)
+[![Daily check in](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/login.yml/badge.svg)](../../actions/workflows/login.yml)
+[![Latest version](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/version.yml/badge.svg)](../../actions/workflows/version.yml)
 
-2. <details>
-   <summary>Open dev tool (<kbd>Ctrl+Shift+I</kbd> or right click > Inspect)</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/81a57cfa-9f2e-48d7-bec6-5ef4edc3b857" />
-   </details>
+<br>
 
-4. <details>
-   <summary>For Chromium users, click on the Application tab. If not found, click on the arrow.</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/ea4bb233-367c-4c41-8c66-30c2bc2f3150" />
-   </details>
-   <details>
-   <summary>For Firefox/Gecko-based browsers, click on the Storage tab.</summary>
-   <img src="https://github.com/user-attachments/assets/4e12c315-9a01-4ad8-9e5f-6197328e900f" />
-   </details>
+[**Fork**](https://github.com/sglkc/hoyolab-auto-daily/fork) · [**Setup guide**](docs/setup.md) · [**Redeemed codes**](docs/redeem-codes.md)
 
-5. <details>
-   <summary>On the filter box, type <code>v2</code>. You might want to expand the dev tools to see clearly.</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/bf1eec5f-bb1e-4af2-b37b-3c3c252328db" />
-   </details>
+</div>
 
-6. <details>
-   <summary>Find <code>ltoken_v2</code> and <code>ltuid_v2</code>, click on them, and copy the value below.</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/3ce70d90-6d5d-4353-ab35-8476c44124a1" />
-   </details>
+---
 
-7. <details open>
-   <summary>Write <code>ltuid_v2=PASTE_ltuid_v2; ltoken_v2=PASTE_ltoken_v2</code> like the screenshot.</summary>
+## What it does
 
-   I write the line on the browser url to make it easier. Pay attention, use semicolon (;) and not colon (:)
+Runs on a schedule (and on demand) to:
 
-   It should look like this: `ltuid_v2=249806310; ltoken_v2=v2_CAISDG...`
+- Check in on [HoYoLAB](https://www.hoyolab.com/) for Genshin, ZZZ, HSR, HI3, and TOT
+- Redeem new Genshin promo codes when `GIFT_COOKIE` is set
+- Optionally notify [Discord](docs/discord.md)
+- Track redeemed codes in [`redeem-state.json`](redeem-state.json) → [dashboard](docs/redeem-codes.md)
 
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/4309fcd9-3d6b-43f3-96f2-d8276bea6280" />
-   </details>
+---
 
-9. Copy that. That's your cookie, keep it save and do NOT share it with anyone!
+## Quick setup
 
-## Usage
+| Step | Action |
+| :--: | --- |
+| 1 | [**Fork**](https://github.com/sglkc/hoyolab-auto-daily/fork) this repo |
+| 2 | Add secret **`COOKIE`** (`ltuid_v2` + `ltoken_v2`) |
+| 3 | Add variable **`GAMES`** (e.g. `gi zzz hsr`) |
+| 4 | [**Run workflow**](../../actions/workflows/login.yml) once manually |
 
-1. [Fork this repo](../../fork)
-2. Open your fork repository
-3. <details>
-   <summary>Go to Settings > Secrets and variables > Actions</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/134a2c25-0345-4a46-b84f-5fa928031e5a" />
-   </details>
+Optional: `GIFT_COOKIE`, `DISCORD_WEBHOOK` — see [**setup guide**](docs/setup.md).
 
-4. <details>
-   <summary>Click on New repository secrets</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/9d77c1d2-60e5-4dd0-a5d4-3b81c1bf0321" />
-   </details>
+---
 
-5. <details>
-   <summary>
-      Insert name with <code>COOKIE</code> and secret with
-      <a href="#getting-your-cookie">your cookie</a>, then click Add secret
-   </summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/9a450ba4-a155-4a0e-8a48-d730a3be5c73" />
-   </details>
+## Documentation
 
-6. <details>
-   <summary>Now for the games, go to Variables and click New repository variable</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/5c6c226a-141c-41c2-82f5-8254b1741196" />
-   </details>
+| Guide | Description |
+| --- | --- |
+| [Setup](docs/setup.md) | GitHub Actions, secrets, first run |
+| [Cookies](docs/cookies.md) | `COOKIE` and `GIFT_COOKIE` |
+| [Local development](docs/local-development.md) | `.env`, npm scripts, testing |
+| [Discord](docs/discord.md) | Webhook notifications |
+| [Redeemed codes](docs/redeem-codes.md) | Dashboard from `redeem-state.json` |
 
-7. <details>
-   <summary>
-      Insert name with <code>GAMES</code> and value with the game codes you want to check in, separated by space like the example screenshot.<br/>
-      Supported values are: <code>zzz</code>, <code>gi</code>, <code>hsr</code>, <code>hi3</code>, <code>tot</code>
-   </summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/01cd1a4b-16ae-4f3c-ba3e-cd3f913e44fa" />
-   </details>
+---
 
-8. <details>
-   <summary>
-      For the first day, you have to trigger this manually.
-      Simply go <a href="../../actions/workflows/login.yml">HERE</a> and click on Run workflow
-   </summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/ea1e48d2-a069-4db6-bdcd-86eecae8d81d" />
-   </details>
+## Local development
 
-9. <details>
-    <summary>Refresh the page, wait for 15-25 secs, and see if it ran successfully. You should now see the check in status on top of README.</summary>
-    <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/5c8520ee-a8b7-4c66-bb1b-ef945c499112" />
-    </details>
+```bash
+cp .env.example .env
+npm run validate && npm run validate-cookies
+npm start          # full run
+npm test           # unit tests
+```
 
-10. You're set! Hop on your game the next day and see if you got the rewards
+Details: [local-development.md](docs/local-development.md)
 
-## Multiple Accounts
+---
 
-<details>
-  <summary>To add other accounts, you can add another cookie and games in a new line like below.</summary>
-  <img src="https://github.com/user-attachments/assets/99fd25cd-71f6-4aae-9949-11d055fadf73" />
-  <img src="https://github.com/user-attachments/assets/4a56f4e1-8fb4-4137-acc6-ac30cade78f1" />
-</details>
+## Project layout
 
-## Discord Webhook
+```text
+index.js          # check-in entry + orchestration
+redeem.js         # Genshin code redemption
+logger.js         # logs + Discord webhook
+redeem-state.json # redemption history (committed by Actions)
 
-You may use Discord webhook to send notifications to your channel!
+scripts/          # local dev & validation helpers
+docs/             # guides + redeem dashboard
+test/             # unit tests
+coverage/         # local test coverage + planning notes
+```
 
-1. <details>
-   <summary>Go to channel settings</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/80f3b2f1-cc55-4316-9153-3fc5026b7da8" />
-   </details>
+---
 
-2. <details>
-   <summary>Go to Integrations and click Create Webhook</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/b4d0c07d-35a5-4382-99de-584c70c4d730" />
-   </details>
+<div align="center">
 
-3. <details>
-   <summary>You can edit the name and picture freely, then Copy Webhook URL</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/3df5b59c-edc9-4884-897c-9159e243598e" />
-   </details>
+MIT © [sglkc](https://github.com/sglkc) · Not affiliated with HoYoverse
 
-4. <details>
-   <summary>Create a new repository <em>variable</em> named <code>DISCORD_WEBHOOK</code> with value of the webhook URL</summary>
-   <img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/15b029ff-906d-472c-b356-ae9efed4477b" />
-   </details>
-
-5. <details>
-   <summary>(Optional) If you want to be tagged on check in, add `DISCORD_USER` variable with your Discord ID.</summary>
-   <img src="https://github.com/user-attachments/assets/995a4b18-4c22-4dcd-9a2e-90fac74079c1" />
-   <img src="https://github.com/user-attachments/assets/52dff051-abb4-4cc0-b834-685d49a06731" />
-   </details>
-
-6. You may trigger the check in manually and see if the messages got sent
-
-## FAQ
-
-### Is this safe?
-
-There should be no issues, automated check-in exists for years and there hasn't been any reports about hoyo doing anything against it
-
-### How to update my (fork) repository version?
-
-<details>
-<summary>Go to your repository and click Sync fork</summary>
-<img src="https://github.com/sglkc/hoyolab-auto-daily/assets/31957516/08c10262-8a97-433b-b499-143cc116184d" />
-</details>
-
-### Error not logged in
-
-This is a common issue even if you seem to get the cookies right. Here's another method to get your cookies:
-
-https://gist.github.com/torikushiii/59eff33fc8ea89dbc0b2e7652db9d3fd
-
-Just copy everything and paste to the COOKIE secret
-
-### I have other issues
-
-To the [Issues page](https://github.com/sglkc/hoyolab-auto-daily/issues)
+</div>

@@ -1,0 +1,23 @@
+# Secrets and local config
+.env
+.env.*
+!.env.example
+
+# Local redemption state (keeps repo redeem-state.json for Actions)
+redeem-state.local.json
+
+# Test coverage output (keep coverage/todo.md in repo)
+coverage/*
+!coverage/todo.md
+
+# Dependencies
+node_modules/
+
+# Logs and temp
+*.log
+npm-debug.log*
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/

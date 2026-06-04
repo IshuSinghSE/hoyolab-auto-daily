@@ -5,8 +5,20 @@
   "private": true,
   "main": "index.js",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node --env-file=.env index.js",
+    "check-in": "node --env-file=.env scripts/run-local.js check-in",
+    "redeem": "node --env-file=.env scripts/run-local.js redeem",
+    "validate": "node --env-file=.env scripts/validate-env.js",
+    "validate-cookies": "node --env-file=.env scripts/validate-cookies.js",
+    "codes": "node scripts/list-codes.js",
+    "stats": "node --env-file=.env scripts/stats.js",
+    "test-discord": "node --env-file=.env scripts/test-discord.js",
+    "docs:generate": "node scripts/generate-docs.js",
+    "test": "node --test test/*.js"
   },
   "keywords": [],
   "author": "sglkc",

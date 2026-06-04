@@ -5,6 +5,9 @@ on:
     - cron: "0 22 * * *" # scheduled at 06:00 (UTC+8) everyday
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   check-in:
     runs-on: ubuntu-latest
@@ -21,9 +24,23 @@ jobs:
         run: node index.js
         env:
           COOKIE: ${{ secrets.COOKIE }}
+          GIFT_COOKIE: ${{ secrets.GIFT_COOKIE }}
           GAMES: ${{ vars.GAMES }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USER: ${{ secrets.DISCORD_USER }}
+
+      - name: Generate documentation
+        run: node scripts/generate-docs.js
+
+      - name: Commit state and docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add redeem-state.json docs/redeem-codes.md
+          git diff --cached --quiet || (
+            git commit -m "chore: update redeem-state.json and redeem-codes"
+            git push
+          )
   workflow-keepalive:
     if: github.event_name == 'schedule'
     runs-on: ubuntu-latest
