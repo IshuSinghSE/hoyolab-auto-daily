@@ -13,6 +13,16 @@ coverage/*
 # Dependencies
 node_modules/
 
+# Generated report images
+daily_report_output.png
+daily-report.png
+calibrate.png
+
+# Proprietary game fonts (copy locally — see assets/fonts/README.md)
+assets/fonts/*.ttf
+assets/fonts/*.otf
+
+
 # Logs and temp
 *.log
 npm-debug.log*

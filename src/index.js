@@ -2,7 +2,12 @@
 
 import { fileURLToPath } from 'url'
 import { resolve } from 'path'
-import { log, hasErrors, discordWebhookSend } from './logger.js'
+import {
+  GI_CHECKIN,
+  mergeGenshinCheckInStatus,
+} from './check-in-status.js'
+import { log, hasErrors } from './logger.js'
+import { sendDiscordDailySummary } from './discord-notify.js'
 import { runRedeem, isDryRun } from './redeem.js'
 
 const endpoints = {
@@ -53,6 +58,13 @@ async function runCheckIn(cookie, gamesLine) {
     games = games.split(' ')
     latestGames = games
   }
+
+  const gameList = games.map(g => g.toLowerCase())
+  if (!gameList.includes('gi')) {
+    return GI_CHECKIN.SKIPPED
+  }
+
+  let genshinStatus = GI_CHECKIN.FAILED
 
   for (let game of games) {
     game = game.toLowerCase()
@@ -105,6 +117,9 @@ async function runCheckIn(cookie, gamesLine) {
 
     if (code in successCodes) {
       log('info', game, `${successCodes[code]}`)
+      if (game === 'gi') {
+        genshinStatus = code === '0' ? GI_CHECKIN.NOW : GI_CHECKIN.ALREADY
+      }
       continue
     }
 
@@ -123,6 +138,8 @@ async function runCheckIn(cookie, gamesLine) {
 
     log('error', game, `Error undocumented, report to Issues page if this persists`)
   }
+
+  return genshinStatus
 }
 
 export async function runDaily(options = {}) {
@@ -139,6 +156,9 @@ export async function runDaily(options = {}) {
     console.log('[DRY RUN] Mode enabled — no check-in API calls, redemptions, state changes, or Discord.\n')
   }
 
+  let genshinCheckInStatus = GI_CHECKIN.SKIPPED
+  let redeemSummary = { newlyRedeemed: [], lifetimePrimogems: 0 }
+
   if (!skipCheckIn) {
     if (!cookies.length) {
       throw new Error('COOKIE environment variable not set!')
@@ -153,18 +173,27 @@ export async function runDaily(options = {}) {
     } else {
       for (const index in cookies) {
         log('info', `-- CHECKING IN FOR ACCOUNT ${Number(index) + 1} --`)
-        await runCheckIn(cookies[index], games[index])
+        const status = await runCheckIn(cookies[index], games[index])
+        genshinCheckInStatus = mergeGenshinCheckInStatus(genshinCheckInStatus, status)
       }
     }
   }
 
   if (!skipRedeem) {
-    await runRedeem({ games })
+    redeemSummary = await runRedeem({ games })
   }
 
   const discordWebhook = process.env.DISCORD_WEBHOOK
   if (!skipDiscord && discordWebhook && URL.canParse(discordWebhook)) {
-    await discordWebhookSend()
+    try {
+      await sendDiscordDailySummary({
+        genshinCheckInStatus,
+        newlyRedeemed: redeemSummary.newlyRedeemed,
+        lifetimePrimogems: redeemSummary.lifetimePrimogems,
+      })
+    } catch (err) {
+      log('error', err.message)
+    }
   }
 
   if (hasErrors && !dryRun) {

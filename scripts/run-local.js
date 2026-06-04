@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { runDaily } from '../index.js'
+import { runDaily } from '../src/index.js'
 
 const mode = process.argv[2] || 'all'
 

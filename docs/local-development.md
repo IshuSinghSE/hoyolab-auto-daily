@@ -42,7 +42,19 @@ npm run stats             # Redemption totals from state file
 npm run test-discord      # Send test webhook
 npm run docs:generate     # Regenerate docs/redeem-codes.md
 npm test                  # Unit tests
+npm run test:smoke-report # Generate sample daily-report.png (CI smoke test)
+npm run generate-report   # Preview report layout locally
 ```
+
+## GitHub Actions
+
+| Workflow | What it runs |
+| --- | --- |
+| [test.yml](../.github/workflows/test.yml) | `npm test` + report image smoke test on every push/PR |
+| [check-in.yml](../.github/workflows/check-in.yml) | Check-in + simple Discord text |
+| [redeem.yml](../.github/workflows/redeem.yml) | Check-in + redeem + Discord report image when new codes are redeemed |
+
+The redeem job installs `canvas` system libraries and runs `node scripts/run-local.js all` so check-in status on the report image is accurate.
 
 ## DRY_RUN
 

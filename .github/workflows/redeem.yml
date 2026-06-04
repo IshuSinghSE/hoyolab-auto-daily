@@ -19,15 +19,39 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
 
-      - name: Redeem codes
-        run: node scripts/run-local.js redeem
+      - name: Install canvas system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            libcairo2-dev \
+            libpango1.0-dev \
+            libjpeg-dev \
+            libgif-dev \
+            librsvg2-dev
+
+      - name: Install npm dependencies
+        run: npm ci
+
+      - name: Check in, redeem, and notify Discord
+        run: node scripts/run-local.js all
         env:
           COOKIE: ${{ secrets.COOKIE }}
           GIFT_COOKIE: ${{ secrets.GIFT_COOKIE }}
           GAMES: ${{ vars.GAMES }}
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           DISCORD_USER: ${{ secrets.DISCORD_USER }}
+
+      - name: Upload daily report image
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: daily-report
+          path: daily-report.png
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Generate documentation
         run: node scripts/generate-docs.js

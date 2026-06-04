@@ -1,6 +1,6 @@
 import { describe, it } from 'node:test'
 import assert from 'node:assert/strict'
-import { mergeTotals, parseRewards, parseGiftCookie } from '../redeem.js'
+import { mergeTotals, parseRewards, parseGiftCookie } from '../src/redeem.js'
 
 describe('mergeTotals', () => {
   it('sums known and new reward keys', () => {

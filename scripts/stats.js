@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { loadRedeemState, formatStatsLabel, getRedeemStatePath } from '../redeem.js'
+import { loadRedeemState, formatStatsLabel, getRedeemStatePath } from '../src/redeem.js'
 
 function sortTotals(totals) {
   return Object.entries(totals).sort((a, b) => b[1] - a[1])

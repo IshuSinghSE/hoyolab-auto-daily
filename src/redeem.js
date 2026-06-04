@@ -12,7 +12,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 export function getRedeemStatePath() {
   return process.env.REDEEM_STATE_PATH
     ? join(process.cwd(), process.env.REDEEM_STATE_PATH)
-    : join(__dirname, 'redeem-state.json')
+    : join(__dirname, '..', 'redeem-state.json')
 }
 const CODES_URL = 'https://hoyo-codes.seria.moe/codes?game=genshin'
 const RECORD_CARD_URL = 'https://bbs-api-os.hoyolab.com/game_record/card/wapi/getGameRecordCard'
@@ -290,8 +290,13 @@ function dryRunRedeemForAccount(accountNum, account, pendingCodes) {
   }
 }
 
+export function getLifetimePrimogems(account) {
+  return account.totals?.primogem ?? 0
+}
+
 export async function runRedeem({ games }) {
   const dryRun = isDryRun()
+  const runSummary = { newlyRedeemed: [], lifetimePrimogems: 0 }
   log('debug', '\n----- GENSHIN CODE REDEMPTION -----')
 
   if (dryRun) {
@@ -303,7 +308,7 @@ export async function runRedeem({ games }) {
     giftAccounts = parseGiftCookie()
   } catch (err) {
     log('error', LOG_GAME, err.message)
-    return false
+    return runSummary
   }
 
   const gamesList = games ?? []
@@ -315,7 +320,7 @@ export async function runRedeem({ games }) {
     activeCodes = await fetchActiveCodes()
   } catch (err) {
     log('error', LOG_GAME, `Failed to fetch active codes: ${err.message}`)
-    return false
+    return runSummary
   }
 
   if (!giftAccounts?.length) {
@@ -330,10 +335,10 @@ export async function runRedeem({ games }) {
         const pendingCodes = activeCodes.filter(entry => !(entry.code in account.redeemedCodes))
         dryRunRedeemForAccount(Number(index) + 1, account, pendingCodes)
       }
-      return false
+      return runSummary
     }
     log('info', LOG_GAME, 'GIFT_COOKIE not configured. Skipping code redemption.')
-    return false
+    return runSummary
   }
 
   let stateChanged = false
@@ -404,6 +409,9 @@ export async function runRedeem({ games }) {
       const rewards = recordRedemption(account, codeEntry)
       stateChanged = true
 
+      runSummary.newlyRedeemed.push({ code: codeEntry.code, rewards })
+      runSummary.lifetimePrimogems = getLifetimePrimogems(account)
+
       log('info', LOG_GAME, `Redeemed ${codeEntry.code}`)
       for (const [key, amount] of Object.entries(rewards)) {
         log('info', LOG_GAME, `+${amount} ${formatRewardLabel(key)}`)
@@ -420,5 +428,5 @@ export async function runRedeem({ games }) {
     await saveState(state)
   }
 
-  return stateChanged
+  return runSummary
 }

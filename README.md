@@ -79,15 +79,21 @@ Details: [local-development.md](docs/local-development.md)
 ## Project layout
 
 ```text
-index.js          # check-in entry + orchestration
-redeem.js         # Genshin code redemption
-logger.js         # logs + Discord webhook
+src/              # core application
+  index.js        # check-in + daily orchestration
+  redeem.js       # Genshin code redemption
+  daily-report.js # Discord report image (canvas)
+  discord-notify.js
+  logger.js
+  check-in-status.js
+  report-fonts.js
+
 redeem-state.json # redemption history (committed by redeem workflow)
-
-.github/workflows/  # check-in.yml + redeem.yml (+ version.yml)
-
-scripts/          # local dev & validation helpers
+assets/           # report template + fonts (local)
+scripts/          # CLI helpers (run-local, validate, preview)
 docs/             # guides + redeem dashboard
+
+.github/workflows/  # check-in.yml + redeem.yml + test.yml
 test/             # unit tests
 coverage/         # local test coverage + planning notes
 ```

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { fetchActiveCodes } from '../redeem.js'
+import { fetchActiveCodes } from '../src/redeem.js'
 
 const codes = await fetchActiveCodes()
 

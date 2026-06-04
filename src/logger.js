@@ -2,7 +2,8 @@ export const messages = []
 export let hasErrors = false
 
 const msgDelimiter = ':'
-const gameLogPrefixes = new Set(['zzz', 'gi', 'hsr', 'hi3', 'tot', 'genshin', 'GENSHIN'])
+/** Game tags kept for console only; Discord uses discord-notify.js instead of messages[]. */
+const gameLogPrefixes = new Set(['zzz', 'gi', 'hsr', 'hi3', 'tot'])
 
 export function log(type, ...data) {
   console[type](...data)

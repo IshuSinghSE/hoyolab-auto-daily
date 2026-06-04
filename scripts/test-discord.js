@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { sendDiscordContent } from '../logger.js'
+import { sendDiscordContent } from '../src/logger.js'
 
 const lines = [
   '(INFO) Test notification',

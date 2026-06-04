@@ -3,13 +3,13 @@
   "version": "1.1.0",
   "description": "Easiest, full free, and no BS Hoyolab games daily check-in using GitHub Actions",
   "private": true,
-  "main": "index.js",
+  "main": "src/index.js",
   "type": "module",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "start": "node --env-file=.env index.js",
+    "start": "node --env-file=.env src/index.js",
     "check-in": "node --env-file=.env scripts/run-local.js check-in",
     "redeem": "node --env-file=.env scripts/run-local.js redeem",
     "validate": "node --env-file=.env scripts/validate-env.js",
@@ -17,10 +17,16 @@
     "codes": "node scripts/list-codes.js",
     "stats": "node --env-file=.env scripts/stats.js",
     "test-discord": "node --env-file=.env scripts/test-discord.js",
+    "send-discord": "node --env-file=.env scripts/send-discord.js",
+    "generate-report": "node scripts/generate-report.js",
     "docs:generate": "node scripts/generate-docs.js",
-    "test": "node --test test/*.js"
+    "test": "node --test test/*.js",
+    "test:smoke-report": "node scripts/smoke-report.js"
   },
   "keywords": [],
   "author": "sglkc",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "canvas": "^3.2.3"
+  }
 }

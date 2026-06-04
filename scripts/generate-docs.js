@@ -3,7 +3,7 @@
 import { writeFile } from 'fs/promises'
 import { dirname, join, resolve } from 'path'
 import { fileURLToPath } from 'url'
-import { loadRedeemState, formatRewardLabel } from '../redeem.js'
+import { loadRedeemState, formatRewardLabel } from '../src/redeem.js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const docsDir = join(__dirname, '..', 'docs')
