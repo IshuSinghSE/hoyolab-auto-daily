@@ -14,9 +14,9 @@ No servers · No dependencies · Fork and run
 
 <br>
 
-[![Daily check in](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/check-in.yml/badge.svg)](../../actions/workflows/check-in.yml)
-[![Redeem codes](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/redeem.yml/badge.svg)](../../actions/workflows/redeem.yml)
-[![Latest version](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/version.yml/badge.svg)](../../actions/workflows/version.yml)
+[![Daily check in](https://github.com/ishusinghse/hoyolab-auto-daily/actions/workflows/check-in.yml/badge.svg)](../../actions/workflows/check-in.yml)
+[![Redeem codes](https://github.com/ishusinghse/hoyolab-auto-daily/actions/workflows/redeem.yml/badge.svg)](../../actions/workflows/redeem.yml)
+[![Latest version](https://github.com/ishusinghse/hoyolab-auto-daily/actions/workflows/version.yml/badge.svg)](../../actions/workflows/version.yml)
 
 <br>
 
