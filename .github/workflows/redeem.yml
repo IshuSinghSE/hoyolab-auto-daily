@@ -1,0 +1,43 @@
+name: Redeem codes
+
+on:
+  schedule:
+    - cron: "30 22 * * *" # 06:30 (UTC+8) daily, after check-in
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  redeem:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone Repo
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Redeem codes
+        run: node scripts/run-local.js redeem
+        env:
+          COOKIE: ${{ secrets.COOKIE }}
+          GIFT_COOKIE: ${{ secrets.GIFT_COOKIE }}
+          GAMES: ${{ vars.GAMES }}
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          DISCORD_USER: ${{ secrets.DISCORD_USER }}
+
+      - name: Generate documentation
+        run: node scripts/generate-docs.js
+
+      - name: Commit state and docs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add redeem-state.json docs/redeem-codes.md
+          git diff --cached --quiet || (
+            git commit -m "chore: update redeem-state.json and redeem-codes"
+            git push
+          )

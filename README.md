@@ -14,7 +14,8 @@ No servers · No dependencies · Fork and run
 
 <br>
 
-[![Daily check in](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/login.yml/badge.svg)](../../actions/workflows/login.yml)
+[![Daily check in](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/check-in.yml/badge.svg)](../../actions/workflows/check-in.yml)
+[![Redeem codes](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/redeem.yml/badge.svg)](../../actions/workflows/redeem.yml)
 [![Latest version](https://github.com/sglkc/hoyolab-auto-daily/actions/workflows/version.yml/badge.svg)](../../actions/workflows/version.yml)
 
 <br>
@@ -27,7 +28,8 @@ No servers · No dependencies · Fork and run
 
 ## What it does
 
-Runs on a schedule (and on demand) to:
+Two workflows run on a schedule (and on demand):
+
 
 - Check in on [HoYoLAB](https://www.hoyolab.com/) for Genshin, ZZZ, HSR, HI3, and TOT
 - Redeem new Genshin promo codes when `GIFT_COOKIE` is set
@@ -43,7 +45,7 @@ Runs on a schedule (and on demand) to:
 | 1 | [**Fork**](https://github.com/sglkc/hoyolab-auto-daily/fork) this repo |
 | 2 | Add secret **`COOKIE`** (`ltuid_v2` + `ltoken_v2`) |
 | 3 | Add variable **`GAMES`** (e.g. `gi zzz hsr`) |
-| 4 | [**Run workflow**](../../actions/workflows/login.yml) once manually |
+| 4 | [**Run check-in**](../../actions/workflows/check-in.yml) and [**redeem**](../../actions/workflows/redeem.yml) once each (optional) |
 
 Optional: `GIFT_COOKIE`, `DISCORD_WEBHOOK` — see [**setup guide**](docs/setup.md).
 
@@ -80,7 +82,9 @@ Details: [local-development.md](docs/local-development.md)
 index.js          # check-in entry + orchestration
 redeem.js         # Genshin code redemption
 logger.js         # logs + Discord webhook
-redeem-state.json # redemption history (committed by Actions)
+redeem-state.json # redemption history (committed by redeem workflow)
+
+.github/workflows/  # check-in.yml + redeem.yml (+ version.yml)
 
 scripts/          # local dev & validation helpers
 docs/             # guides + redeem dashboard

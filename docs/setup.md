@@ -50,13 +50,13 @@ One line per account for multiple accounts.
 
 Include `gi` if you want automatic Genshin code redemption.
 
-### 4. Run the workflow
+### 4. Run the workflows
 
-1. [Actions → Daily check in](../.github/workflows/login.yml)
-2. **Run workflow** → **Run workflow**
-3. Wait ~15–25 seconds for a green run
+1. [Actions → Daily check in](../.github/workflows/check-in.yml) → **Run workflow**
+2. [Actions → Redeem codes](../.github/workflows/redeem.yml) → **Run workflow** (needs `GIFT_COOKIE` for redemption)
+3. Wait ~15–25 seconds per run
 
-The README workflow badge should pass.
+The README workflow badges should pass.
 
 ### Optional secrets
 
