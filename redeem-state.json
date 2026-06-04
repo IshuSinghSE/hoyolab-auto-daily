@@ -1,3 +1,65 @@
 {
-  "accounts": {}
+  "accounts": {
+    "account_1": {
+      "redeemedCodes": {
+        "NMI20MAJGIBP": {
+          "redeemedAt": "2026-06-04T09:31:55.703Z",
+          "rewards": {
+            "primogem": 20,
+            "geodeofreplication": 160
+          }
+        },
+        "YMYD76U85Z1U": {
+          "redeemedAt": "2026-06-04T09:32:06.313Z",
+          "rewards": {
+            "mora": 10000,
+            "adventurersexperience": 10,
+            "fineenhancementore": 5,
+            "jueyunchilichicken": 5
+          }
+        },
+        "MAGENICOLESPUZZLE": {
+          "redeemedAt": "2026-06-04T09:32:16.929Z",
+          "rewards": {
+            "primogem": 60,
+            "midsommartorte": 1,
+            "fruittandemturnovers": 1,
+            "chenyuadeptea": 5
+          }
+        },
+        "PSCA8NL4ZSPD": {
+          "redeemedAt": "2026-06-04T09:32:27.517Z",
+          "rewards": {
+            "primogemsandfiveadventurersexperience": 60
+          }
+        },
+        "G5HS7EMI47D0": {
+          "redeemedAt": "2026-06-04T09:32:38.148Z",
+          "rewards": {
+            "primogem": 60,
+            "adventurersexperience": 5
+          }
+        },
+        "PFY1S40I88T9": {
+          "redeemedAt": "2026-06-04T09:32:48.720Z",
+          "rewards": {
+            "primogem": 60,
+            "adventurersexperience": 5
+          }
+        }
+      },
+      "totals": {
+        "primogem": 200,
+        "geodeofreplication": 160,
+        "mora": 10000,
+        "adventurersexperience": 20,
+        "fineenhancementore": 5,
+        "jueyunchilichicken": 5,
+        "midsommartorte": 1,
+        "fruittandemturnovers": 1,
+        "chenyuadeptea": 5,
+        "primogemsandfiveadventurersexperience": 60
+      }
+    }
+  }
 }
