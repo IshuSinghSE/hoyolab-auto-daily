@@ -57,19 +57,29 @@
             "jueyunchilichicken": 5,
             "stirfriedfishnoodles": 5
           }
+        },
+        "LCXGEA5SX65L": {
+          "redeemedAt": "2026-06-10T23:54:25.741Z",
+          "rewards": {
+            "mora": 10000,
+            "adventurersexperience": 10,
+            "fineenhancementore": 5,
+            "jueyunchilichicken": 5,
+            "stirfriedfishnoodles": 5
+          }
         }
       },
       "totals": {
         "primogem": 260,
         "geodeofreplication": 160,
-        "mora": 20000,
-        "adventurersexperience": 35,
-        "fineenhancementore": 10,
-        "jueyunchilichicken": 10,
+        "mora": 30000,
+        "adventurersexperience": 45,
+        "fineenhancementore": 15,
+        "jueyunchilichicken": 15,
         "midsommartorte": 1,
         "fruittandemturnovers": 1,
         "chenyuadeptea": 5,
-        "stirfriedfishnoodles": 5
+        "stirfriedfishnoodles": 10
       }
     }
   }
